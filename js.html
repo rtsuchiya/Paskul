@@ -1,0 +1,118 @@
+<script>
+  // ノードの取得を行う
+  const result = document.querySelector("#result");
+  const passBtn = document.querySelector("#pass_btn");
+  const copyBtn = document.querySelector("#copy_btn");
+  
+  // 定数を用意する
+  const LOWER_ALPHA = "abcdefghijkmnopqrstuvwxyz";
+  const UPPER_ALPHA = "ABCDEFGHJKLMNPQRSTUVWXYZ";
+  const NUMBER = "0123456789";
+  const SIGN = "@_!#$%+-";
+  
+  /**
+  * パスワードの生成を行う
+  */
+  function passGen(e) {
+    // 文字数と記号フラグを取得する
+    const length = parseInt(document.querySelector("#length").value);
+    const signFlag = document.querySelector("#sign_flag").checked;
+    
+    // ベースとなる文字列を作成する
+    var baseString = LOWER_ALPHA + UPPER_ALPHA + NUMBER;
+    if (signFlag) {
+      baseString += SIGN;
+    }
+    
+    // パスワードを生成し表示する
+    var resultString = "";
+    for (var i=0; i<length; i++) {
+      resultString += baseString[Math.floor(Math.random() * baseString.length)];
+    }
+    result.value = resultString; 
+  }
+  
+  /**
+  * クリップボードにコピーする
+  */
+  function copy2Clipboard(e) {
+    // 表示されているパスワードを選択する
+    result.select();
+    
+    // クリップボードにコピーする
+    document.execCommand("copy");
+  }
+  
+  /**
+  * パスワードの強度をチェックする
+  */
+  function passCheck(e) {
+    // 入力がなければチェックしない
+    var resultValue = result.value;
+    if (!resultValue) {
+      $("#progress").progress({percent: 0});
+      return;
+    }
+  
+    // zxcvbnで強度チェックを実施する
+    var checkResult = zxcvbn(resultValue);
+    
+    // スコアによってプログレスバーを変更する
+    switch(checkResult.score) {
+      case 0:
+        $("#progress").progress({percent: 20});
+        break;
+      case 1:
+        $("#progress").progress({percent: 40});
+        break;
+      case 2:
+        $("#progress").progress({percent: 60});
+        break;
+      case 3:
+        $("#progress").progress({percent: 80});
+        break;
+      case 4:
+        $("#progress").progress({percent: 100});
+        break;
+      default:
+        $("#progress").progress({percent: 0});
+        break;
+    }
+  }
+  
+  // 各イベントを登録する
+  passBtn.addEventListener("click", passGen, false);
+  passBtn.addEventListener("click", passCheck, false);
+  result.addEventListener("keyup", passCheck, false);
+  copyBtn.addEventListener("click", copy2Clipboard, false);
+  
+  // semantic uiに必要な関数を有効化する
+  $(".ui.button").popup();
+  $(".ui.modal").modal("hide");
+  $(".ui.checkbox").checkbox();
+  $("#progress").progress({percent: 0});
+  $(".ui.form").form({
+    fields: {
+      "service_name": {
+        identifier: "service_name",
+        rules: [
+          {
+            type   : "empty",
+            prompt : "必須項目です"
+          }
+        ]
+      },
+      "password": {
+        identifier: "password",
+        rules: [
+          {
+            type   : "empty",
+            prompt : "必須項目です"
+          }
+        ]
+      }
+    },
+    on: "blur",
+    inline: true
+  })
+</script>

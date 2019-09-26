@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <base target="_top">
+    <?!= HtmlService.createHtmlOutputFromFile('css').getContent(); ?>
+    <title>Paskul</title>
+  </head>
+  <body>
+  <div class="ui main text container">
+    <!-- タイトル -->
+    <h1 class="ui header">
+      <i class="lock icon"></i>
+      <div class="content">
+        Paskul
+        <div class="sub header">パスワード生成・管理ツール</div>
+      </div>
+    </h1>
+    
+    <!-- パスワード生成 -->
+    <h3 class="ui top attached header">
+      <i class="key icon"></i>
+      <div class="content">パスワード生成</div>
+    </h3>
+    <div class="ui attached segment">
+      <div class="ui form">
+        <div class="ten wide field">
+          <div class="ui action input">
+            <input id="result" onfocus="this.select()" placeholder="ここにパスワードが表示されます"/>
+            <button class="ui primary button" id="pass_btn" type="button">生成</button>
+            <button class="ui icon button" id="copy_btn" type="button" data-content="クリックボードにコピーします">
+              <i class="copy icon"></i>
+            </button>
+          </div>
+          <div class="ui attached indicating progress" id="progress">
+            <div class="bar"></div>
+            <div class="label" id="label"></div>
+          </div>
+        </div>
+        <h5 class="ui top attached block header">
+          <div class="content">オプション</div>
+        </h5>
+        <div class="ui attached segment">
+        <div class="field">
+          <label>文字数</label>
+          <select class="ui dropdown" id="length">
+            <option value="8" selected>8</option>
+            <option value="9">9</option>
+            <option value="10">10</option>
+            <option value="11">11</option>
+            <option value="12">12</option>
+            <option value="13">13</option>
+            <option value="14">14</option>
+            <option value="15">15</option>
+            <option value="16">16</option>
+          </select>
+        </div>
+        <div class="ui segment">
+          <div class="field">
+            <div class="ui toggle checkbox">
+              <label>記号</label>
+              <input class="hidden" tabindex="0" type="checkbox" id="sign_flag">
+            </div>
+          </div>
+        </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- パスワード管理 -->
+    <h3 class="ui top attached header">
+      <i class="setting icon"></i>
+      <div class="content">パスワード管理</div>
+    </h3>
+    <div class="ui attached segment">
+      <button class="ui primary button" onclick="$('.ui.modal').modal('show');">パスワードを保存する</button>
+      <table class="ui single line compact table">
+        <thead>
+          <tr>
+            <th class="three wide">サービス名</th>
+            <th class="three wide">パスワード</th>
+            <th class="two wide">生成日時</th>
+          </tr>
+        </thead>
+        <tbody>
+          <?
+            var passwordList = getPasswordList();
+            
+            // データがない場合(ヘッダーのみの場合)
+            if (passwordList.length === 1) {
+              output.append("<tr>");
+              output.append("<td>履歴がありません</td><td></td><td></td>");
+              output.append("</tr>");
+            }
+            
+            // テーブル形式で履歴を表示する
+            for (var i=1; i<passwordList.length; i++) {
+              output.append("<tr>");
+              output.append("<td>" + passwordList[i][0] + "</td>");
+              output.append("<td>" + passwordList[i][1] + "</td>");
+              output.append("<td>" + passwordList[i][2] + "</td>");
+              output.append("</tr>");
+            }
+          ?>
+        </tbody>
+      </table>
+    </div>
+    
+    <!-- モーダルウィンドウ -->
+    <div class="ui modal">
+      <i class="close icon"></i>
+      <div class="header">
+        パスワード管理
+      </div>
+      <div class="content">
+        <form class="ui form" method="post" action="https://script.google.com/macros/s/AKfycbwMSZPRfYbomgWekiMy1MqbjaZrY-Dj-EF6Don0trBlAel9Mkw/exec">
+          <div class="five wide required field">
+            <label>サービス名</label>
+            <input id="service_name" name="service_name"/>
+          </div>
+          <div class="five wide required field">
+            <label>パスワード</label>
+            <input id="password" name="password"/>
+          </div>
+          <input class="ui primary button" type="submit" id="save_btn" value="保存"/>
+        </form>
+      </div>
+    </div> 
+  </div>
+  <?!= HtmlService.createHtmlOutputFromFile('js').getContent(); ?>
+  </body>
+</html>
