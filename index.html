@@ -97,7 +97,7 @@
               output.append("<tr>");
               output.append("<td>" + passwordList[i][0] + "</td>");
               output.append("<td>" + passwordList[i][1] + "</td>");
-              output.append("<td>" + passwordList[i][2] + "</td>");
+              output.append("<td>" + Utilities.formatDate(passwordList[i][2], "Asia/Tokyo", "yyyy年MM月dd日 HH時mm分ss秒") + "</td>");
               output.append("</tr>");
             }
           ?>
